@@ -5,6 +5,7 @@ from nb2tex.ir import (
     FigureBlock,
     TableBlock,
     EquationBlock,
+    DocumentMeta,
 )
 from nb2tex.utils import markdown_to_latex
 
@@ -54,7 +55,49 @@ def render_equation(block):
 """
 
 
-def render_document(ir):
+def _escape_latex_text(text):
+    if not text:
+        return ""
+
+    replacements = {
+        "\\": r"\textbackslash{}",
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\textasciicircum{}",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
+def _render_title_block(metadata):
+    if not metadata or not metadata.has_title_info():
+        return ""
+
+    title = _escape_latex_text(metadata.title)
+    authors = _escape_latex_text(metadata.authors)
+    date = _escape_latex_text(metadata.date)
+
+    return "\n".join(
+        [
+            f"\\title{{{title}}}",
+            f"\\author{{{authors}}}",
+            f"\\date{{{date}}}",
+            "\\maketitle",
+        ]
+    )
+
+
+def render_document(ir, metadata=None):
+    if metadata is None:
+        metadata = DocumentMeta()
+
     body = []
 
     for block in ir:
@@ -70,8 +113,12 @@ def render_document(ir):
             body.append(render_equation(block))
 
     content = "\n".join(body)
+    title_block = _render_title_block(metadata)
 
     with open("templates/template.tex", "r", encoding="utf-8") as f:
         template = f.read()
+
+    if "%(content)" in template or "%(title_block)" in template:
+        return template % {"title_block": title_block, "content": content}
 
     return template % content

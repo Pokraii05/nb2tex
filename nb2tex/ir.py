@@ -49,3 +49,13 @@ class EquationBlock:
     def __init__(self, latex, label):
         self.latex = latex
         self.label = label
+
+
+class DocumentMeta:
+    def __init__(self, title="", authors="", date=""):
+        self.title = title
+        self.authors = authors
+        self.date = date
+
+    def has_title_info(self):
+        return any([self.title, self.authors, self.date])

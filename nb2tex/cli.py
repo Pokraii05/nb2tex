@@ -27,8 +27,8 @@ def main():
     with open(input_path, "r", encoding="utf-8-sig") as f:
         nb = json.load(f)
 
-    ir = build_ir(nb, figure_dir=figure_dir, figure_ref_dir="figures")
-    tex = render_document(ir)
+    ir, metadata = build_ir(nb, figure_dir=figure_dir, figure_ref_dir="figures")
+    tex = render_document(ir, metadata)
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(tex)
