@@ -163,7 +163,9 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
                         if md_kind == "markdown":
                             ir.append(MarkdownBlock(md_chunk))
                         else:
-                            ir.append(TableBlock(md_chunk, "", ""))
+                            label = counters.next_tbl()
+                            caption = extract_caption(text, "Generated table")
+                            ir.append(TableBlock(md_chunk, caption, label))
                 else:
                     label = counters.next_eq()
                     ir.append(EquationBlock(chunk, label))

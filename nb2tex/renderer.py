@@ -41,6 +41,8 @@ def render_table(block):
         caption_and_label += f"\\caption{{{block.caption}}}\n"
     if block.label:
         caption_and_label += f"\\label{{{block.label}}}\n"
+    if block.caption:
+        caption_and_label += "\\vspace{6pt}\n"
 
     return f"""
 \\begin{{table}}[H]
