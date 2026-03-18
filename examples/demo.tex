@@ -149,9 +149,10 @@ import matplotlib.pyplot as plt
 x = np.linspace(0, 10, 100)
 y = np.sin(x)
 
-plt.plot(x, y)
-plt.title("Sine Wave")
-plt.show()
+for i in range (3):
+    plt.plot(x, y)
+    plt.title("Sine Wave")
+    plt.show()
 \end{lstlisting}
 
 
@@ -160,6 +161,22 @@ plt.show()
 \includegraphics[width=0.8\textwidth]{figures/fig_0.png}
 \caption{Generated figure}
 \label{fig:1}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/fig_1.png}
+\caption{Generated figure}
+\label{fig:2}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/fig_2.png}
+\caption{Generated figure}
+\label{fig:3}
 \end{figure}
 
 \subsection{Table}\label{table}
@@ -178,6 +195,9 @@ print(df)
 
 \begin{table}[H]
 \centering
+\caption{Generated table}
+\label{tbl:1}
+
 \begin{tabular}{ll}
 \toprule
 A & B \\
@@ -187,32 +207,22 @@ A & B \\
 3 & 6 \\
 \bottomrule
 \end{tabular}
-\caption{Generated table}
-\label{tbl:1}
 \end{table}
 
-Here is an equation:
+What about this table?
 
 
-\begin{lstlisting}[style=nbpython]
-from IPython.display import display, Math
+\begin{table}[H]
+\centering
 
-display(Math(r"E = mc^2"))
-\end{lstlisting}
-
-
-\begin{equation}
-\displaystyle E = mc^2
-\label{eq:4}
-\end{equation}
-
-What about this equation \(Andrea\) or this one
-
-
-\begin{equation}
-Andrea
-\label{eq:5}
-\end{equation}
+\begin{tabular}{ll}
+\toprule
+This & is \\
+\midrule
+a & table \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 \end{document}

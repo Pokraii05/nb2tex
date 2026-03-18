@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1773853517.58627 "c:/Users/User/Desktop/nb2tex/nb2tex/examples/demo.tex" "demo.pdf" "demo" 1773853519.42621 0
+["pdflatex"] 1773854366.01697 "c:/Users/User/Desktop/nb2tex/nb2tex/examples/demo.tex" "demo.pdf" "demo" 1773854368.43846 0
   "C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1773849803 114015 3cb121138816406cc06f2cf5607646fd ""
   "C:/Users/User/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1765548834 11548 0f673458e9a384dd501a4f58b5570a9c ""
   "C:/Users/User/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1765547349 13333028 39c8fc18eeaf7050e139ef4623b034db ""
@@ -28,7 +28,6 @@
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1247596667 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1247596666 32362 bc3f3eec7ab7d65fe700963d4017d32c ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb" 1247596667 31809 8670ca339bf94e56da1fc21c80635e2a ""
-  "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1247596667 32762 7fee39e011c23b3589931effd97b9702 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1247596667 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt9.pfb" 1247596667 29078 718ea4567ceff944262b0f5b0800e1d9 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -64,10 +63,12 @@
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/listings/lstmisc.sty" 1763898348 77105 002e983b638eadbf04e580642335f689 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/listings/lstpatch.sty" 1763898348 353 9024412f43e92cd5b21fe9ded82d0610 ""
   "C:/Users/User/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "c:/Users/User/Desktop/nb2tex/nb2tex/examples/demo.tex" 1773853392 4478 73a12a4f9c42ac6c4f2242643dfa0a64 ""
-  "demo.aux" 1773853519 1717 4302e197819c6525650e2c1ae012ac69 "pdflatex"
-  "demo.tex" 1773853392 4478 73a12a4f9c42ac6c4f2242643dfa0a64 ""
-  "figures/fig_0.png" 1773853387 25736 efad26a2a606fecf956a686c9c9885b2 ""
+  "c:/Users/User/Desktop/nb2tex/nb2tex/examples/demo.tex" 1773854361 4633 2349c2359bf959a6dfd00281d9279d81 ""
+  "demo.aux" 1773854368 1953 f15423bd00a738029c4a0d6ca87e9ad1 "pdflatex"
+  "demo.tex" 1773854361 4633 2349c2359bf959a6dfd00281d9279d81 ""
+  "figures/fig_0.png" 1773854357 25736 efad26a2a606fecf956a686c9c9885b2 ""
+  "figures/fig_1.png" 1773854357 25736 efad26a2a606fecf956a686c9c9885b2 ""
+  "figures/fig_2.png" 1773854357 25736 efad26a2a606fecf956a686c9c9885b2 ""
   (generated)
   "demo.aux"
   "demo.log"

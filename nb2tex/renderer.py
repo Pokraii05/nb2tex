@@ -36,12 +36,17 @@ def render_figure(block):
 
 
 def render_table(block):
+    caption_and_label = ""
+    if block.caption:
+        caption_and_label += f"\\caption{{{block.caption}}}\n"
+    if block.label:
+        caption_and_label += f"\\label{{{block.label}}}\n"
+
     return f"""
 \\begin{{table}}[H]
 \\centering
+{caption_and_label}
 {block.latex}
-\\caption{{{block.caption}}}
-\\label{{{block.label}}}
 \\end{{table}}
 """
 
