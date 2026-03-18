@@ -1,0 +1,13 @@
+
+"""
+[project]
+name = "nb2tex"
+version = "0.1.0"
+dependencies = [
+    "pypandoc",
+    "beautifulsoup4"
+]
+
+[project.scripts]
+nb2tex = "nb2tex.cli:main"
+"""
