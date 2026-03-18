@@ -30,7 +30,7 @@ def main():
     ir, metadata = build_ir(nb, figure_dir=figure_dir, figure_ref_dir="figures")
     tex = render_document(ir, metadata)
 
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(tex)
 
 

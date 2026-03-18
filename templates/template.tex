@@ -6,6 +6,17 @@
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
+\usepackage[
+	a4paper,
+	left=2.5cm,
+	right=2.5cm,
+	top=2.5cm,
+	bottom=2.5cm,
+	headheight=14pt,
+	headsep=0.6cm,
+	footskip=1cm
+]{geometry}
+\usepackage{fancyhdr}
 
 \definecolor{nbbg}{HTML}{F7F8FA}
 \definecolor{nbframe}{HTML}{D9DEE8}
@@ -34,6 +45,21 @@
 
 \providecommand{\tightlist}{%%
 	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{General Physics Laboratory 2}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[C]{General Physics Laboratory 2}
+	\fancyfoot[R]{\thepage}
+	\renewcommand{\headrulewidth}{0.4pt}
+	\renewcommand{\footrulewidth}{0.4pt}
 }
 
 \begin{document}

@@ -3,7 +3,9 @@ import re
 
 
 def markdown_to_latex(md_text):
-    return pypandoc.convert_text(md_text, "latex", format="markdown+tex_math_dollars")
+    latex = pypandoc.convert_text(md_text, "latex", format="markdown+tex_math_dollars")
+    # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.
+    return latex.replace("\r\n", "\n").replace("\r", "\n")
 
 
 def split_markdown_display_equations(md_text):

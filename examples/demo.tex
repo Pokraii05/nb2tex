@@ -6,6 +6,17 @@
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
+\usepackage[
+	a4paper,
+	left=2.5cm,
+	right=2.5cm,
+	top=2.5cm,
+	bottom=2.5cm,
+	headheight=14pt,
+	headsep=0.6cm,
+	footskip=1cm
+]{geometry}
+\usepackage{fancyhdr}
 
 \definecolor{nbbg}{HTML}{F7F8FA}
 \definecolor{nbframe}{HTML}{D9DEE8}
@@ -36,30 +47,99 @@
 	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%
 }
 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{General Physics Laboratory 2}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[C]{General Physics Laboratory 2}
+	\fancyfoot[R]{\thepage}
+	\renewcommand{\headrulewidth}{0.4pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
 \begin{document}
 
-\title{XYZ}
+\title{Introduction to General Physics Laboratory 2 (Template)}
 \author{Affan Kaknjo (50\%), Andrea Pokrajčić (50\%)}
 \date{01.01. 2001.}
 \maketitle
 
-\section{Title 1}\label{title-1}
+\section{Tasks}\label{tasks}
 
-\subsection{Subtitle 1}\label{subtitle-1}
+\subsection{Task 1}\label{task-1}
 
-\begin{itemize}
-\tightlist
-\item
-  Andrea
-\item
-  Luka
-\item
-  Affan
-\end{itemize}
+Measure the voltage-current characteristics of a real voltage source by
+varying the load resistor \(R_L\). Determine the internal resistance
+\(R_i\), the no-load voltage (electromotive force, emf) \(U_q\) and the
+short-circuit current \(I_k\) by fitting.
 
-This is a test of \textbf{nb2tex}.
-
-Figure: A simple sine plot
+\subsection{Task 2}\label{task-2}
+
+From the data of Task 1 calculate the electrical power dissipated by the
+load resistor. Determine the internal resistance, the electromotive
+force and the maximum power of the voltage source by nonlinear data
+fitting in the \(P-R_a\) diagram. Compare these results with those from
+Task 1.
+
+\subsection{Task 3}\label{task-3}
+
+Measure the voltage-current characteristic of a solar cell by varying
+the load resistance RL. Plot the \(P-R_a\) diagram and determine the
+operating point and the power generated at this point.
+
+\begin{itemize}
+\tightlist
+\item
+  Subtask 1
+\item
+  Subtask 2
+\item
+  Subtask 3
+\end{itemize}
+
+\subsection{Task 2}\label{task-2}
+
+\section{Theoretical overview}\label{theoretical-overview}
+
+A real voltage source can be modeled as an ideal electromotive force
+(emf) \(U_q\) in series with an internal resistance \(R_i\). The
+terminal voltage \(U_k\) across the source depends on the current \(I\)
+drawn by the load resistor \(R_L\).
+
+
+\begin{equation}
+U_k = U_q - I \, R_i
+\label{eq:1}
+\end{equation}
+
+The short-circuit current \(I_k\) (when \(U_k = 0\)) is therefore:
+
+
+\begin{equation}
+I_k = \frac{U_q}{R_i}
+\label{eq:2}
+\end{equation}
+
+When no current flows (\(I = 0\)), the terminal voltage equals the emf:
+
+
+\begin{equation}
+U_k = U_q
+\label{eq:3}
+\end{equation}
+
+This linear relationship between \(U_k\) and \(I\) allows one to
+determine both \(R_i\) and \(U_q\) by fitting a straight line to the
+measured voltage-current data.
+
+\subsection{Plot}\label{plot}
+
+This is an example of plotting.
 
 
 \begin{lstlisting}[style=nbpython]
@@ -78,11 +158,11 @@ plt.show()
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/fig_0.png}
-\caption{A simple sine plot}
+\caption{Generated figure}
 \label{fig:1}
 \end{figure}
 
-Table: Example dataframe
+\subsection{Table}\label{table}
 
 
 \begin{lstlisting}[style=nbpython]
@@ -107,11 +187,11 @@ A & B \\
 3 & 6 \\
 \bottomrule
 \end{tabular}
-\caption{Example dataframe}
+\caption{Generated table}
 \label{tbl:1}
 \end{table}
 
-Here is an equation:
+Here is an equation:
 
 
 \begin{lstlisting}[style=nbpython]
@@ -123,15 +203,15 @@ display(Math(r"E = mc^2"))
 
 \begin{equation}
 \displaystyle E = mc^2
-\label{eq:1}
+\label{eq:4}
 \end{equation}
 
-What about this equation \(Andrea\) or this one
+What about this equation \(Andrea\) or this one
 
 
 \begin{equation}
 Andrea
-\label{eq:2}
+\label{eq:5}
 \end{equation}
 
 
