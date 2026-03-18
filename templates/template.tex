@@ -1,15 +1,39 @@
+\documentclass{article}
 
-"""
-\\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
 
-\\usepackage{graphicx}
-\\usepackage{amsmath}
-\\usepackage{booktabs}
-\\usepackage{minted}
+\definecolor{nbbg}{HTML}{F7F8FA}
+\definecolor{nbframe}{HTML}{D9DEE8}
+\definecolor{nbkeyword}{HTML}{1F4E79}
+\definecolor{nbstring}{HTML}{A31515}
+\definecolor{nbcomment}{HTML}{2E8B57}
+\definecolor{nbnumbers}{HTML}{6A737D}
 
-\\begin{document}
+\lstdefinestyle{nbpython}{
+	language=Python,
+	backgroundcolor=\color{nbbg},
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{nbkeyword}\bfseries,
+	stringstyle=\color{nbstring},
+	commentstyle=\color{nbcomment}\itshape,
+	numbers=left,
+	numberstyle=\tiny\color{nbnumbers},
+	numbersep=8pt,
+	frame=single,
+	rulecolor=\color{nbframe},
+	breaklines=true,
+	showstringspaces=false,
+	tabsize=4,
+	columns=fullflexible
+}
+
+\begin{document}
 
 %s
 
-\\end{document}
-"""
+\end{document}

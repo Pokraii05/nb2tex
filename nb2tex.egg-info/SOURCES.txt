@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+nb2tex/__init__.py
+nb2tex/cli.py
+nb2tex/extractors.py
+nb2tex/ir.py
+nb2tex/parser.py
+nb2tex/renderer.py
+nb2tex/utils.py
+nb2tex.egg-info/PKG-INFO
+nb2tex.egg-info/SOURCES.txt
+nb2tex.egg-info/dependency_links.txt
+nb2tex.egg-info/entry_points.txt
+nb2tex.egg-info/requires.txt
+nb2tex.egg-info/top_level.txt
