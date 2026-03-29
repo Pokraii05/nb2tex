@@ -6,6 +6,7 @@ _ESCAPED_INLINE_MATH_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
 _PANDOC_BOUNDED_IMAGE_RE = re.compile(
     r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
 )
+_ESCAPED_DOLLAR_LATEX_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
 
 
 def _normalize_inline_math_delimiters(md_text):
@@ -29,10 +30,26 @@ def _normalize_pandoc_bounded_images(latex_text):
     return _PANDOC_BOUNDED_IMAGE_RE.sub(repl, latex_text)
 
 
+def _normalize_escaped_inline_math_in_latex(latex_text):
+    # In some cases Pandoc emits inline math as literal escaped dollars (\$...\$).
+    # When the payload looks math-like, recover it as proper inline math.
+    math_hints = ("\\pm", "\\Omega", "_", "^", "=", "\\frac", "\\cdot")
+
+    def repl(match):
+        inner = match.group(1)
+        if not any(hint in inner for hint in math_hints):
+            return match.group(0)
+        inner = inner.replace(r"\_", "_").strip()
+        return rf"\({inner}\)"
+
+    return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
+
+
 def markdown_to_latex(md_text):
     md_text = _normalize_inline_math_delimiters(md_text)
     latex = pypandoc.convert_text(md_text, "latex", format="markdown+tex_math_dollars")
     latex = _normalize_pandoc_bounded_images(latex)
+    latex = _normalize_escaped_inline_math_in_latex(latex)
     # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.
     return latex.replace("\r\n", "\n").replace("\r", "\n")
 
