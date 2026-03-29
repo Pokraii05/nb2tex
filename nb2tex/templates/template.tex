@@ -1,0 +1,71 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage[
+	a4paper,
+	left=2.5cm,
+	right=2.5cm,
+	top=2.5cm,
+	bottom=2.5cm,
+	headheight=14pt,
+	headsep=0.6cm,
+	footskip=1cm
+]{geometry}
+\usepackage{fancyhdr}
+
+\definecolor{nbbg}{HTML}{F7F8FA}
+\definecolor{nbframe}{HTML}{D9DEE8}
+\definecolor{nbkeyword}{HTML}{1F4E79}
+\definecolor{nbstring}{HTML}{A31515}
+\definecolor{nbcomment}{HTML}{2E8B57}
+\definecolor{nbnumbers}{HTML}{6A737D}
+
+\lstdefinestyle{nbpython}{
+	language=Python,
+	backgroundcolor=\color{nbbg},
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{nbkeyword}\bfseries,
+	stringstyle=\color{nbstring},
+	commentstyle=\color{nbcomment}\itshape,
+	numbers=left,
+	numberstyle=\tiny\color{nbnumbers},
+	numbersep=8pt,
+	frame=single,
+	rulecolor=\color{nbframe},
+	breaklines=true,
+	showstringspaces=false,
+	tabsize=4,
+	columns=fullflexible
+}
+
+\providecommand{\tightlist}{%%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{ 12-PHY-BIPGP2 General Physics Laboratory 2}
+\fancyfoot[R]{ Affan Kaknjo, Andrea Pokrajčić \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[L]{ 12-PHY-BIPGP2 General Physics Laboratory 2}
+	\fancyfoot[R]{ Affan Kaknjo, Andrea Pokrajčić \thepage}
+	\renewcommand{\headrulewidth}{0.4pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
+\begin{document}
+
+%(title_block)s
+
+%(content)s
+
+\end{document}

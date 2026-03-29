@@ -1,4 +1,6 @@
 
+from importlib import resources
+
 from nb2tex.ir import (
     MarkdownBlock,
     CodeBlock,
@@ -122,8 +124,9 @@ def render_document(ir, metadata=None):
     content = "\n".join(body)
     title_block = _render_title_block(metadata)
 
-    with open("templates/template.tex", "r", encoding="utf-8") as f:
-        template = f.read()
+    template = resources.files("nb2tex").joinpath("templates/template.tex").read_text(
+        encoding="utf-8"
+    )
 
     if "%(content)" in template or "%(title_block)" in template:
         return template % {"title_block": title_block, "content": content}
