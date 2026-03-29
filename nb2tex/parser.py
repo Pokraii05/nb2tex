@@ -202,11 +202,11 @@ def _rewrite_relative_refs(md_text, last_figure_label=None, last_table_label=Non
     updated = md_text
     if last_figure_label:
         updated = _RELATIVE_FIGURE_REF_RE.sub(
-            f"Figure (\\ref{{{last_figure_label}}})", updated
+            lambda _: f"Figure (\\ref{{{last_figure_label}}})", updated
         )
     if last_table_label:
         updated = _RELATIVE_TABLE_REF_RE.sub(
-            f"Table (\\ref{{{last_table_label}}})", updated
+            lambda _: f"Table (\\ref{{{last_table_label}}})", updated
         )
     return updated
 
