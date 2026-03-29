@@ -3,6 +3,9 @@ import re
 
 
 _ESCAPED_INLINE_MATH_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
+_PANDOC_BOUNDED_IMAGE_RE = re.compile(
+    r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
+)
 
 
 def _normalize_inline_math_delimiters(md_text):
@@ -10,9 +13,26 @@ def _normalize_inline_math_delimiters(md_text):
     return _ESCAPED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1)}$", md_text)
 
 
+def _normalize_pandoc_bounded_images(latex_text):
+    # Force all Pandoc-bounded images to stay within page bounds.
+    def repl(match):
+        path = match.group(1)
+        return (
+            "\\pandocbounded{"
+            "\\includegraphics[width=\\linewidth,height=0.85\\textheight,"
+            "keepaspectratio]{"
+            f"{path}"
+            "}"
+            "}"
+        )
+
+    return _PANDOC_BOUNDED_IMAGE_RE.sub(repl, latex_text)
+
+
 def markdown_to_latex(md_text):
     md_text = _normalize_inline_math_delimiters(md_text)
     latex = pypandoc.convert_text(md_text, "latex", format="markdown+tex_math_dollars")
+    latex = _normalize_pandoc_bounded_images(latex)
     # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.
     return latex.replace("\r\n", "\n").replace("\r", "\n")
 
