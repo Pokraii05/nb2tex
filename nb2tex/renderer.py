@@ -24,8 +24,8 @@ def _normalize_code_for_latex(code):
     return code
 
 
-def render_markdown(block):
-    return markdown_to_latex(block.text)
+def render_markdown(block, markdown_index=0):
+    return markdown_to_latex(block.text, id_prefix=f"nb2tex-m{markdown_index}-")
 
 
 def render_code(block):
@@ -42,7 +42,9 @@ def render_figure(block):
     return f"""
 \\begin{{figure}}[H]
 \\centering
-\\includegraphics[width=\\linewidth,height=0.8\\textheight,keepaspectratio]{{{tex_path}}}
+\\adjustbox{{max width=0.8\\linewidth,max totalheight=0.65\\textheight}}{{%
+\\includegraphics{{{tex_path}}}%
+}}
 \\caption{{{block.caption}}}
 \\label{{{block.label}}}
 \\end{{figure}}
@@ -120,10 +122,12 @@ def render_document(ir, metadata=None):
         metadata = DocumentMeta()
 
     body = []
+    markdown_index = 0
 
     for block in ir:
         if isinstance(block, MarkdownBlock):
-            body.append(render_markdown(block))
+            body.append(render_markdown(block, markdown_index=markdown_index))
+            markdown_index += 1
         elif isinstance(block, CodeBlock):
             body.append(render_code(block))
         elif isinstance(block, FigureBlock):

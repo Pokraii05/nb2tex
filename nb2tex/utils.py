@@ -18,14 +18,7 @@ def _normalize_pandoc_bounded_images(latex_text):
     # Force all Pandoc-bounded images to stay within page bounds.
     def repl(match):
         path = match.group(1)
-        return (
-            "\\pandocbounded{"
-            "\\includegraphics[width=\\linewidth,height=0.85\\textheight,"
-            "keepaspectratio]{"
-            f"{path}"
-            "}"
-            "}"
-        )
+        return "\\pandocbounded{\\includegraphics{" + path + "}}"
 
     return _PANDOC_BOUNDED_IMAGE_RE.sub(repl, latex_text)
 
@@ -45,9 +38,18 @@ def _normalize_escaped_inline_math_in_latex(latex_text):
     return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
 
 
-def markdown_to_latex(md_text):
+def markdown_to_latex(md_text, id_prefix=""):
     md_text = _normalize_inline_math_delimiters(md_text)
-    latex = pypandoc.convert_text(md_text, "latex", format="markdown+tex_math_dollars")
+    extra_args = []
+    if id_prefix:
+        extra_args.append(f"--id-prefix={id_prefix}")
+
+    latex = pypandoc.convert_text(
+        md_text,
+        "latex",
+        format="markdown+tex_math_dollars",
+        extra_args=extra_args,
+    )
     latex = _normalize_pandoc_bounded_images(latex)
     latex = _normalize_escaped_inline_math_in_latex(latex)
     # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.

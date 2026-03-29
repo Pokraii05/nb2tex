@@ -10,15 +10,15 @@ class Counters:
 
     def next_fig(self):
         self.fig += 1
-        return f"fig:{self.fig}"
+        return f"nb2tex:fig:{self.fig}"
 
     def next_tbl(self):
         self.tbl += 1
-        return f"tbl:{self.tbl}"
+        return f"nb2tex:tbl:{self.tbl}"
 
     def next_eq(self):
         self.eq += 1
-        return f"eq:{self.eq}"
+        return f"nb2tex:eq:{self.eq}"
 
 
 class MarkdownBlock:
