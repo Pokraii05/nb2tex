@@ -12,12 +12,24 @@ from nb2tex.ir import (
 from nb2tex.utils import markdown_to_latex
 
 
+def _normalize_code_for_latex(code):
+    replacements = {
+        "\u2013": "-",  # en dash
+        "\u2014": "--",  # em dash
+        "\u2212": "-",  # minus sign
+        "\u00a0": " ",  # non-breaking space
+    }
+    for old, new in replacements.items():
+        code = code.replace(old, new)
+    return code
+
+
 def render_markdown(block):
     return markdown_to_latex(block.text)
 
 
 def render_code(block):
-    code = block.code.rstrip("\n")
+    code = _normalize_code_for_latex(block.code).rstrip("\n")
     return f"""
 \\begin{{lstlisting}}[style=nbpython]
 {code}
