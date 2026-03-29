@@ -16,9 +16,21 @@ pip install .
 nb2tex path/to/notebook.ipynb -o path/to/output.tex
 ```
 
+Custom figure directory name (relative to notebook location):
+
+```bash
+nb2tex path/to/notebook.ipynb --figures-dir plots -o path/to/output.tex
+```
+
+Custom figure directory absolute path:
+
+```bash
+nb2tex path/to/notebook.ipynb --figures-dir /absolute/path/to/my-images -o path/to/output.tex
+```
+
 If `-o/--output` is omitted, the output is written next to the notebook as `<notebook_name>.tex`.
 
 ## Figures directory requirement
 
-`nb2tex` expects a `figures` directory to exist in the same directory as the input notebook.
-If that directory does not exist, conversion fails with an error.
+`nb2tex` checks that the selected figures directory exists (default is `figures` next to the notebook).
+If it does not exist, conversion fails with an error.

@@ -12,6 +12,14 @@ def main():
     )
     parser.add_argument("input", help="Path to input notebook (.ipynb)")
     parser.add_argument("-o", "--output", help="Path to output .tex file")
+    parser.add_argument(
+        "--figures-dir",
+        default="figures",
+        help=(
+            "Figure directory name or path. Relative paths are resolved "
+            "relative to the input notebook directory."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -20,10 +28,15 @@ def main():
         parser.error(f"Input notebook does not exist: {input_path}")
 
     input_dir = os.path.dirname(input_path)
-    figure_dir = os.path.join(input_dir, "figures")
+    if os.path.isabs(args.figures_dir):
+        figure_dir = args.figures_dir
+    else:
+        figure_dir = os.path.join(input_dir, args.figures_dir)
+    figure_dir = os.path.abspath(figure_dir)
+
     if not os.path.isdir(figure_dir):
         parser.error(
-            "Expected figures directory next to notebook, but it was not found: "
+            "Expected figures directory was not found: "
             f"{figure_dir}"
         )
 
