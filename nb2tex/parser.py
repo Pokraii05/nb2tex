@@ -13,6 +13,14 @@ _MARKDOWN_IMAGE_LINE_RE = re.compile(
     r"^[ \t]*!\[(?P<alt>[^\]]*)\]\((?P<target>[^)]+)\)[ \t]*$",
     re.MULTILINE,
 )
+_RELATIVE_FIGURE_REF_RE = re.compile(
+    r"\bfigure\s*(?:\(\s*)?(?:above|previous|earlier|last)\s*(?:\))?",
+    re.IGNORECASE,
+)
+_RELATIVE_TABLE_REF_RE = re.compile(
+    r"\btable\s*(?:\(\s*)?(?:above|previous|earlier|last)\s*(?:\))?",
+    re.IGNORECASE,
+)
 
 
 def _parse_markdown_image_target(target):
@@ -187,6 +195,22 @@ def _parse_document_meta(md_text):
     return DocumentMeta(title=title, authors=authors, date=date)
 
 
+def _rewrite_relative_refs(md_text, last_figure_label=None, last_table_label=None):
+    if not md_text:
+        return md_text
+
+    updated = md_text
+    if last_figure_label:
+        updated = _RELATIVE_FIGURE_REF_RE.sub(
+            f"Figure (\\ref{{{last_figure_label}}})", updated
+        )
+    if last_table_label:
+        updated = _RELATIVE_TABLE_REF_RE.sub(
+            f"Table (\\ref{{{last_table_label}}})", updated
+        )
+    return updated
+
+
 def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
     ir = []
     metadata = DocumentMeta()
@@ -194,6 +218,8 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
     last_md = ""
     figure_file_index = 0
     first_markdown_processed = False
+    last_figure_label = None
+    last_table_label = None
 
     for cell in nb["cells"]:
         if cell["cell_type"] == "markdown":
@@ -211,18 +237,25 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
                 if kind == "markdown":
                     for block_kind, block_data in _split_markdown_images(chunk):
                         if block_kind == "markdown":
-                            for md_kind, md_chunk in _split_markdown_pipe_tables(block_data):
+                            normalized_md = _rewrite_relative_refs(
+                                block_data,
+                                last_figure_label=last_figure_label,
+                                last_table_label=last_table_label,
+                            )
+                            for md_kind, md_chunk in _split_markdown_pipe_tables(normalized_md):
                                 if md_kind == "markdown":
                                     ir.append(MarkdownBlock(md_chunk))
                                 else:
                                     label = counters.next_tbl()
                                     caption = extract_caption(text, "Generated table")
                                     ir.append(TableBlock(md_chunk, caption, label))
+                                    last_table_label = label
                         else:
                             label = counters.next_fig()
                             caption = block_data["caption"]
                             path = block_data["path"]
                             ir.append(FigureBlock(path, caption, label))
+                            last_figure_label = label
                 else:
                     label = counters.next_eq()
                     ir.append(EquationBlock(chunk, label))
@@ -248,6 +281,7 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
                     label = counters.next_fig()
                     caption = extract_caption(last_md, "Generated figure")
                     ir.append(FigureBlock(path, caption, label))
+                    last_figure_label = label
                     continue
 
                 tbl = extract_table_from_output(out)
@@ -255,6 +289,7 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
                     label = counters.next_tbl()
                     caption = extract_caption(last_md, "Generated table")
                     ir.append(TableBlock(tbl, caption, label))
+                    last_table_label = label
                     continue
 
                 eq = extract_equation_from_output(out)
