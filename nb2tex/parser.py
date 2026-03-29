@@ -9,6 +9,56 @@ import re
 
 
 _PIPE_TABLE_SEPARATOR_RE = re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$")
+_MARKDOWN_IMAGE_LINE_RE = re.compile(
+    r"^[ \t]*!\[(?P<alt>[^\]]*)\]\((?P<target>[^)]+)\)[ \t]*$",
+    re.MULTILINE,
+)
+
+
+def _parse_markdown_image_target(target):
+    value = target.strip()
+    title = ""
+
+    # Supports: path "title"
+    if len(value) >= 3 and value.endswith('"') and ' "' in value:
+        value, title_part = value.rsplit(' "', 1)
+        title = title_part[:-1].strip()
+        value = value.strip()
+
+    # Supports: <path with spaces>
+    if value.startswith("<") and value.endswith(">") and len(value) >= 2:
+        value = value[1:-1].strip()
+
+    return value, title
+
+
+def _split_markdown_images(md_text):
+    parts = []
+    last = 0
+
+    for match in _MARKDOWN_IMAGE_LINE_RE.finditer(md_text):
+        markdown_chunk = md_text[last:match.start()]
+        if markdown_chunk.strip():
+            parts.append(("markdown", markdown_chunk))
+
+        path, title = _parse_markdown_image_target(match.group("target"))
+        if path:
+            alt_text = match.group("alt").strip()
+            caption = title or alt_text or "Generated figure"
+            parts.append(("figure", {"path": path, "caption": caption}))
+        else:
+            parts.append(("markdown", match.group(0)))
+
+        last = match.end()
+
+    trailing = md_text[last:]
+    if trailing.strip():
+        parts.append(("markdown", trailing))
+
+    if not parts:
+        return [("markdown", md_text)]
+
+    return parts
 
 
 def _escape_latex_cell(text):
@@ -159,13 +209,20 @@ def build_ir(nb, figure_dir="figures", figure_ref_dir=None):
 
             for kind, chunk in split_markdown_display_equations(text):
                 if kind == "markdown":
-                    for md_kind, md_chunk in _split_markdown_pipe_tables(chunk):
-                        if md_kind == "markdown":
-                            ir.append(MarkdownBlock(md_chunk))
+                    for block_kind, block_data in _split_markdown_images(chunk):
+                        if block_kind == "markdown":
+                            for md_kind, md_chunk in _split_markdown_pipe_tables(block_data):
+                                if md_kind == "markdown":
+                                    ir.append(MarkdownBlock(md_chunk))
+                                else:
+                                    label = counters.next_tbl()
+                                    caption = extract_caption(text, "Generated table")
+                                    ir.append(TableBlock(md_chunk, caption, label))
                         else:
-                            label = counters.next_tbl()
-                            caption = extract_caption(text, "Generated table")
-                            ir.append(TableBlock(md_chunk, caption, label))
+                            label = counters.next_fig()
+                            caption = block_data["caption"]
+                            path = block_data["path"]
+                            ir.append(FigureBlock(path, caption, label))
                 else:
                     label = counters.next_eq()
                     ir.append(EquationBlock(chunk, label))
