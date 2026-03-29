@@ -6,6 +6,7 @@
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
+\usepackage{adjustbox}
 \usepackage[
 	a4paper,
 	left=2.5cm,
@@ -46,7 +47,9 @@
 \providecommand{\tightlist}{%%
 	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%%
 }
-\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\pandocbounded}[1]{%
+	\adjustbox{max width=\linewidth,max totalheight=0.85\textheight}{#1}%
+}
 
 \pagestyle{fancy}
 \fancyhf{}

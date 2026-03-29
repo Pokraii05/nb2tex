@@ -42,7 +42,7 @@ def render_figure(block):
     return f"""
 \\begin{{figure}}[H]
 \\centering
-\\includegraphics[width=0.8\\textwidth]{{{tex_path}}}
+\\includegraphics[width=\\linewidth,height=0.8\\textheight,keepaspectratio]{{{tex_path}}}
 \\caption{{{block.caption}}}
 \\label{{{block.label}}}
 \\end{{figure}}
