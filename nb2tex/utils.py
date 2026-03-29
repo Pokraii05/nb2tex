@@ -37,7 +37,8 @@ def _normalize_escaped_inline_math_in_latex(latex_text):
             return match.group(0)
         inner = (
             inner.replace(r"\_", "_")
-            .replace(r"\^{\}", "^")
+            .replace(r"\^{}", "^")
+            .replace(r"\^", "^")
             .replace(r"\{", "{")
             .replace(r"\}", "}")
             .strip()
