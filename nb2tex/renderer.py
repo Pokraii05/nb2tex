@@ -1,5 +1,6 @@
 
 from importlib import resources
+import re
 
 from nb2tex.ir import (
     MarkdownBlock,
@@ -10,6 +11,9 @@ from nb2tex.ir import (
     DocumentMeta,
 )
 from nb2tex.utils import markdown_to_latex
+
+
+_LATEX_LABEL_RE = re.compile(r"\\label\{([^{}]+)\}")
 
 
 def _normalize_code_for_latex(code):
@@ -117,6 +121,19 @@ def _render_title_block(metadata):
     )
 
 
+def _remove_duplicate_labels(latex_text):
+    seen = set()
+
+    def repl(match):
+        label = match.group(1)
+        if label in seen:
+            return ""
+        seen.add(label)
+        return match.group(0)
+
+    return _LATEX_LABEL_RE.sub(repl, latex_text)
+
+
 def render_document(ir, metadata=None):
     if metadata is None:
         metadata = DocumentMeta()
@@ -138,6 +155,7 @@ def render_document(ir, metadata=None):
             body.append(render_equation(block))
 
     content = "\n".join(body)
+    content = _remove_duplicate_labels(content)
     title_block = _render_title_block(metadata)
 
     template = resources.files("nb2tex").joinpath("templates/template.tex").read_text(

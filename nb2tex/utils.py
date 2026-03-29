@@ -47,7 +47,7 @@ def markdown_to_latex(md_text, id_prefix=""):
     latex = pypandoc.convert_text(
         md_text,
         "latex",
-        format="markdown+tex_math_dollars",
+        format="markdown+tex_math_dollars-auto_identifiers",
         extra_args=extra_args,
     )
     latex = _normalize_pandoc_bounded_images(latex)
