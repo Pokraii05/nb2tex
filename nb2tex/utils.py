@@ -3,6 +3,7 @@ import re
 
 
 _ESCAPED_INLINE_MATH_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
+_SPACED_INLINE_MATH_RE = re.compile(r"(?<!\\)\$\s+(.+?)\s+\$", re.DOTALL)
 _PANDOC_BOUNDED_IMAGE_RE = re.compile(
     r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
 )
@@ -11,7 +12,9 @@ _ESCAPED_DOLLAR_LATEX_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
 
 def _normalize_inline_math_delimiters(md_text):
     # Accept author-written \$...\$ as inline math and convert to $...$.
-    return _ESCAPED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1)}$", md_text)
+    md_text = _ESCAPED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1)}$", md_text)
+    # Also normalize spaced delimiters like "$ e^{...} $" to "$e^{...}$".
+    return _SPACED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1).strip()}$", md_text)
 
 
 def _normalize_pandoc_bounded_images(latex_text):
@@ -32,7 +35,13 @@ def _normalize_escaped_inline_math_in_latex(latex_text):
         inner = match.group(1)
         if not any(hint in inner for hint in math_hints):
             return match.group(0)
-        inner = inner.replace(r"\_", "_").strip()
+        inner = (
+            inner.replace(r"\_", "_")
+            .replace(r"\^{\}", "^")
+            .replace(r"\{", "{")
+            .replace(r"\}", "}")
+            .strip()
+        )
         return rf"\({inner}\)"
 
     return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
