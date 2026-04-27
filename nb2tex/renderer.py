@@ -14,18 +14,33 @@ from nb2tex.utils import markdown_to_latex
 
 
 _LATEX_LABEL_RE = re.compile(r"\\label\{([^{}]+)\}")
+_CODE_UNICODE_REPLACEMENTS = {
+    "\u2013": "-",  # en dash
+    "\u2014": "--",  # em dash
+    "\u2212": "-",  # minus sign
+    "\u00a0": " ",  # non-breaking space
+    "\u00b1": "+/-",  # plus-minus
+    "\u00b0": "deg",  # degree sign
+    "\u03bc": "mu",  # greek small letter mu
+    "\u00b5": "mu",  # micro sign
+    "\u03a9": "Omega",  # greek capital letter omega
+    "\u03c9": "omega",  # greek small letter omega
+    "\u03c6": "phi",  # greek small letter phi
+}
 
 
 def _normalize_code_for_latex(code):
-    replacements = {
-        "\u2013": "-",  # en dash
-        "\u2014": "--",  # em dash
-        "\u2212": "-",  # minus sign
-        "\u00a0": " ",  # non-breaking space
-    }
-    for old, new in replacements.items():
+    for old, new in _CODE_UNICODE_REPLACEMENTS.items():
         code = code.replace(old, new)
-    return code
+
+    # Keep listings payload pure ASCII for deterministic pdflatex behavior.
+    sanitized = []
+    for ch in code:
+        if ord(ch) < 128:
+            sanitized.append(ch)
+            continue
+        sanitized.append(f"\\u{ord(ch):04X}")
+    return "".join(sanitized)
 
 
 def render_markdown(block, markdown_index=0):

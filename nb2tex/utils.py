@@ -7,8 +7,69 @@ _SPACED_INLINE_MATH_RE = re.compile(r"(?<!\\)\$\s+(.+?)\s+\$", re.DOTALL)
 _PANDOC_BOUNDED_IMAGE_RE = re.compile(
     r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
 )
-_ESCAPED_DOLLAR_LATEX_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
 _INLINE_MATH_LATEX_RE = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
+
+
+def _normalize_problematic_unicode_in_latex(latex_text):
+    # Keep pdflatex-safe output for common scientific Unicode symbols in markdown.
+    replacements = {
+        "°": r"\ensuremath{^\circ}",
+        "Ω": r"\ensuremath{\Omega}",
+        "ω": r"\ensuremath{\omega}",
+        "μ": r"\ensuremath{\mu}",
+        "φ": r"\ensuremath{\phi}",
+        "π": r"\ensuremath{\pi}",
+        "±": r"\ensuremath{\pm}",
+    }
+    for old, new in replacements.items():
+        latex_text = latex_text.replace(old, new)
+    return latex_text
+
+
+def _balance_dollar_math_delimiters(latex_text):
+    # Validate and sanitize $ / $$ delimiters so malformed pairs become literals.
+    out = []
+    stack = []
+    i = 0
+
+    while i < len(latex_text):
+        ch = latex_text[i]
+
+        if ch == "\\" and i + 1 < len(latex_text):
+            out.append(latex_text[i : i + 2])
+            i += 2
+            continue
+
+        if ch != "$":
+            out.append(ch)
+            i += 1
+            continue
+
+        is_display = i + 1 < len(latex_text) and latex_text[i + 1] == "$"
+        delim = "$$" if is_display else "$"
+
+        if not stack:
+            out.append(delim)
+            stack.append((delim, len(out) - 1))
+            i += 2 if is_display else 1
+            continue
+
+        current_delim, _ = stack[-1]
+        if current_delim == delim:
+            out.append(delim)
+            stack.pop()
+            i += 2 if is_display else 1
+            continue
+
+        # Mismatched nesting: treat as literal dollars rather than opening math.
+        out.append(r"\$\$" if is_display else r"\$")
+        i += 2 if is_display else 1
+
+    while stack:
+        delim, idx = stack.pop()
+        out[idx] = r"\$\$" if delim == "$$" else r"\$"
+
+    return "".join(out)
 
 
 def _normalize_inline_math_delimiters(md_text):
@@ -25,28 +86,6 @@ def _normalize_pandoc_bounded_images(latex_text):
         return "\\pandocbounded{\\includegraphics{" + path + "}}"
 
     return _PANDOC_BOUNDED_IMAGE_RE.sub(repl, latex_text)
-
-
-def _normalize_escaped_inline_math_in_latex(latex_text):
-    # In some cases Pandoc emits inline math as literal escaped dollars (\$...\$).
-    # When the payload looks math-like, recover it as proper inline math.
-    math_hints = ("\\pm", "\\Omega", "_", "^", "=", "\\frac", "\\cdot")
-
-    def repl(match):
-        inner = match.group(1)
-        if not any(hint in inner for hint in math_hints):
-            return match.group(0)
-        inner = (
-            inner.replace(r"\_", "_")
-            .replace(r"\^{}", "^")
-            .replace(r"\^", "^")
-            .replace(r"\{", "{")
-            .replace(r"\}", "}")
-            .strip()
-        )
-        return rf"\({inner}\)"
-
-    return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
 
 
 def _normalize_inline_math_spacing_in_latex(latex_text):
@@ -81,8 +120,11 @@ def markdown_to_latex(md_text, id_prefix=""):
         extra_args=extra_args,
     )
     latex = _normalize_pandoc_bounded_images(latex)
-    latex = _normalize_escaped_inline_math_in_latex(latex)
+    # Avoid heuristic conversion of escaped dollars to math wrappers,
+    # which can introduce partial delimiters in plain-text fragments.
     latex = _normalize_inline_math_spacing_in_latex(latex)
+    latex = _normalize_problematic_unicode_in_latex(latex)
+    latex = _balance_dollar_math_delimiters(latex)
     # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.
     return latex.replace("\r\n", "\n").replace("\r", "\n")
 
