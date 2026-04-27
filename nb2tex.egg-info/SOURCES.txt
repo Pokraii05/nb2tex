@@ -13,3 +13,4 @@ nb2tex.egg-info/dependency_links.txt
 nb2tex.egg-info/entry_points.txt
 nb2tex.egg-info/requires.txt
 nb2tex.egg-info/top_level.txt
+nb2tex/templates/template.tex

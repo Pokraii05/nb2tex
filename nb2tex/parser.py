@@ -9,6 +9,10 @@ import re
 
 
 _PIPE_TABLE_SEPARATOR_RE = re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$")
+_INLINE_OR_DISPLAY_MATH_RE = re.compile(
+    r"(?<!\\)(\$\$.*?(?<!\\)\$\$|\$.*?(?<!\\)\$)",
+    re.DOTALL,
+)
 _MARKDOWN_IMAGE_LINE_RE = re.compile(
     r"^[ \t]*!\[(?P<alt>[^\]]*)\]\((?P<target>[^)]+)\)[ \t]*$",
     re.MULTILINE,
@@ -70,21 +74,33 @@ def _split_markdown_images(md_text):
 
 
 def _escape_latex_cell(text):
-    replacements = {
-        "\\": r"\textbackslash{}",
-        "&": r"\&",
-        "%": r"\%",
-        "$": r"\$",
-        "#": r"\#",
-        "_": r"\_",
-        "{": r"\{",
-        "}": r"\}",
-        "~": r"\textasciitilde{}",
-        "^": r"\textasciicircum{}",
-    }
-    for old, new in replacements.items():
-        text = text.replace(old, new)
-    return text
+    def escape_plain(plain_text):
+        replacements = {
+            "\\": r"\textbackslash{}",
+            "&": r"\&",
+            "%": r"\%",
+            "$": r"\$",
+            "#": r"\#",
+            "_": r"\_",
+            "{": r"\{",
+            "}": r"\}",
+            "~": r"\textasciitilde{}",
+            "^": r"\textasciicircum{}",
+        }
+        for old, new in replacements.items():
+            plain_text = plain_text.replace(old, new)
+        return plain_text
+
+    # Preserve inline/display math while escaping plain text.
+    parts = []
+    last = 0
+    for match in _INLINE_OR_DISPLAY_MATH_RE.finditer(text):
+        parts.append(escape_plain(text[last:match.start()]))
+        parts.append(match.group(1))
+        last = match.end()
+
+    parts.append(escape_plain(text[last:]))
+    return "".join(parts)
 
 
 def _pipe_row_to_cells(line):
@@ -97,7 +113,65 @@ def _pipe_row_to_cells(line):
     if stripped.endswith("|"):
         stripped = stripped[:-1]
 
-    return [cell.strip() for cell in stripped.split("|")]
+    cells = []
+    current = []
+    in_math = False
+    in_code = False
+    i = 0
+
+    while i < len(stripped):
+        ch = stripped[i]
+
+        # Keep escaped characters together so escaped pipes (\|) stay literal.
+        if ch == "\\" and i + 1 < len(stripped):
+            current.append(ch)
+            current.append(stripped[i + 1])
+            i += 2
+            continue
+
+        if ch == "`" and not in_math:
+            in_code = not in_code
+            current.append(ch)
+            i += 1
+            continue
+
+        if ch == "$":
+            if not in_code:
+                in_math = not in_math
+            current.append(ch)
+            i += 1
+            continue
+
+        if ch == "|" and not in_math and not in_code:
+            cells.append("".join(current).strip())
+            current = []
+            i += 1
+            continue
+
+        current.append(ch)
+        i += 1
+
+    if in_math or in_code:
+        # Malformed delimiters in this line; skip table parsing.
+        return []
+
+    cells.append("".join(current).strip())
+    return cells
+
+
+def _separator_row_to_cells(line):
+    stripped = line.strip()
+    if "|" not in stripped:
+        return []
+
+    if stripped.startswith("|"):
+        stripped = stripped[1:]
+    if stripped.endswith("|"):
+        stripped = stripped[:-1]
+
+    cells = [cell.strip() for cell in stripped.split("|")]
+    valid = all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells)
+    return cells if valid else []
 
 
 def _pipe_table_to_latex(header, body):
@@ -139,7 +213,7 @@ def _split_markdown_pipe_tables(md_text):
     while i < len(lines):
         if i + 1 < len(lines) and _PIPE_TABLE_SEPARATOR_RE.match(lines[i + 1]):
             header = _pipe_row_to_cells(lines[i])
-            separator = _pipe_row_to_cells(lines[i + 1])
+            separator = _separator_row_to_cells(lines[i + 1])
 
             if len(header) >= 2 and len(separator) == len(header):
                 j = i + 2

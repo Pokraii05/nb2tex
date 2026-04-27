@@ -6,6 +6,7 @@
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
+\usepackage{adjustbox}
 \usepackage[
 	a4paper,
 	left=2.5cm,
@@ -46,6 +47,9 @@
 \providecommand{\tightlist}{%
 	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%
 }
+\providecommand{\pandocbounded}[1]{%
+	\adjustbox{max width=0.8\linewidth,max totalheight=0.65\textheight}{#1}%
+}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -53,6 +57,9 @@
 \fancyfoot[R]{ Affan Kaknjo, Andrea Pokrajčić \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
 
 \fancypagestyle{plain}{
 	\fancyhf{}
@@ -69,16 +76,16 @@
 \date{01.01. 2001.}
 \maketitle
 
-\section{Tasks}\label{tasks}
+\section{Tasks}
 
-\subsection{Task 1}\label{task-1}
+\subsection{Task 1}
 
 Measure the voltage-current characteristics of a real voltage source by
 varying the load resistor \(R_L\). Determine the internal resistance
 \(R_i\), the no-load voltage (electromotive force, emf) \(U_q\) and the
 short-circuit current \(I_k\) by fitting.
 
-\subsection{Task 2}\label{task-2}
+\subsection{Task 2}
 
 From the data of Task 1 calculate the electrical power dissipated by the
 load resistor. Determine the internal resistance, the electromotive
@@ -86,7 +93,7 @@ force and the maximum power of the voltage source by nonlinear data
 fitting in the \(P-R_a\) diagram. Compare these results with those from
 Task 1.
 
-\subsection{Task 3}\label{task-3}
+\subsection{Task 3}
 
 Measure the voltage-current characteristic of a solar cell by varying
 the load resistance RL. Plot the \(P-R_a\) diagram and determine the
@@ -102,27 +109,27 @@ operating point and the power generated at this point.
   Subtask 3
 \end{itemize}
 
-\subsection{Task 2}\label{task-2}
+\subsection{Task 2}
 
-\section{Theoretical overview}\label{theoretical-overview}
+\section{Theoretical overview}
 
 A real voltage source can be modeled as an ideal electromotive force
-(emf) \(U_q\) in series with an internal resistance \(R_i\). The
-terminal voltage \(U_k\) across the source depends on the current \(I\)
-drawn by the load resistor \(R_L\).
+(emf) \(U_q\) in series with an internal resistance \(R_i\). The terminal
+voltage \(U_k\) across the source depends on the current \(I\) drawn by the
+load resistor \(R_L\).
 
 
 \begin{equation}
 U_k = U_q - I \, R_i
-\label{eq:1}
+\label{nb2tex:eq:1}
 \end{equation}
 
-The short-circuit current \(I_k\) (when \(U_k = 0\)) is therefore:
+The short-circuit current \(I_k\)(when \(U_k = 0\)) is therefore:
 
 
 \begin{equation}
 I_k = \frac{U_q}{R_i}
-\label{eq:2}
+\label{nb2tex:eq:2}
 \end{equation}
 
 When no current flows (\(I = 0\)), the terminal voltage equals the emf:
@@ -130,14 +137,14 @@ When no current flows (\(I = 0\)), the terminal voltage equals the emf:
 
 \begin{equation}
 U_k = U_q
-\label{eq:3}
+\label{nb2tex:eq:3}
 \end{equation}
 
-This linear relationship between \(U_k\) and \(I\) allows one to
-determine both \(R_i\) and \(U_q\) by fitting a straight line to the
-measured voltage-current data.
+This linear relationship between \(U_k\) and \(I\) allows one to determine
+both \(R_i\) and \(U_q\) by fitting a straight line to the measured
+voltage-current data.
 
-\subsection{Plot}\label{plot}
+\subsection{Plot}
 
 This is an example of plotting.
 
@@ -158,28 +165,34 @@ for i in range (3):
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/fig_0.png}
+\adjustbox{max width=0.8\linewidth,max totalheight=0.65\textheight}{%
+\includegraphics{figures/fig_0.png}%
+}
 \caption{Generated figure}
-\label{fig:1}
+\label{nb2tex:fig:1}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/fig_1.png}
+\adjustbox{max width=0.8\linewidth,max totalheight=0.65\textheight}{%
+\includegraphics{figures/fig_1.png}%
+}
 \caption{Generated figure}
-\label{fig:2}
+\label{nb2tex:fig:2}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{figures/fig_2.png}
+\adjustbox{max width=0.8\linewidth,max totalheight=0.65\textheight}{%
+\includegraphics{figures/fig_2.png}%
+}
 \caption{Generated figure}
-\label{fig:3}
+\label{nb2tex:fig:3}
 \end{figure}
 
-\subsection{Table}\label{table}
+\subsection{Table}
 
 
 \begin{lstlisting}[style=nbpython]
@@ -196,7 +209,7 @@ print(df)
 \begin{table}[H]
 \centering
 \caption{Generated table}
-\label{tbl:1}
+\label{nb2tex:tbl:1}
 \vspace{6pt}
 
 \begin{tabular}{ll}
@@ -216,7 +229,7 @@ What about this table?
 \begin{table}[H]
 \centering
 \caption{Generated table}
-\label{tbl:2}
+\label{nb2tex:tbl:2}
 \vspace{6pt}
 
 \begin{tabular}{ll}
@@ -227,6 +240,33 @@ a & table \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsubsection{Table with equations in cells}
+
+The following table includes inline equations in cells, including
+absolute value notation with a pipe character:
+
+
+\begin{table}[H]
+\centering
+\caption{Generated table}
+\label{nb2tex:tbl:3}
+\vspace{6pt}
+
+\begin{tabular}{lll}
+\toprule
+Quantity & Expression & Note \\
+\midrule
+Ohm's law current & $I = \frac{U}{R}$ & Linear relation \\
+Load power & $P = I^2 R$ & Resistive load \\
+Absolute value example & $|x| = \sqrt{x^2}$ & Contains pipe symbol in math \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To get around this, we will define three parameters for fitting as
+follows: \(a = R_{sp}C\), \(b=RC\) and \(c=LC\). If we rewrite eq. (13)
+with the parameter swap we end up with eq. (14).
 
 
 \end{document}

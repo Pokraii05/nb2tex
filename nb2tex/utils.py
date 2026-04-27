@@ -8,6 +8,7 @@ _PANDOC_BOUNDED_IMAGE_RE = re.compile(
     r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
 )
 _ESCAPED_DOLLAR_LATEX_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
+_INLINE_MATH_LATEX_RE = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
 
 
 def _normalize_inline_math_delimiters(md_text):
@@ -48,6 +49,25 @@ def _normalize_escaped_inline_math_in_latex(latex_text):
     return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
 
 
+def _normalize_inline_math_spacing_in_latex(latex_text):
+    # Keep natural word spacing around inline math when Pandoc collapses it,
+    # e.g. "current\(I_k\)by" -> "current \(I_k\) by".
+    def repl(match):
+        segment = match.group(0)
+
+        before = ""
+        if match.start() > 0 and latex_text[match.start() - 1].isalnum():
+            before = " "
+
+        after = ""
+        if match.end() < len(latex_text) and latex_text[match.end()].isalnum():
+            after = " "
+
+        return f"{before}{segment}{after}"
+
+    return _INLINE_MATH_LATEX_RE.sub(repl, latex_text)
+
+
 def markdown_to_latex(md_text, id_prefix=""):
     md_text = _normalize_inline_math_delimiters(md_text)
     extra_args = []
@@ -62,6 +82,7 @@ def markdown_to_latex(md_text, id_prefix=""):
     )
     latex = _normalize_pandoc_bounded_images(latex)
     latex = _normalize_escaped_inline_math_in_latex(latex)
+    latex = _normalize_inline_math_spacing_in_latex(latex)
     # Pandoc may return CRLF line endings; normalize to LF to keep spacing stable.
     return latex.replace("\r\n", "\n").replace("\r", "\n")
 

@@ -1,5 +1,45 @@
 Metadata-Version: 2.4
 Name: nb2tex
 Version: 0.1.0
+Summary: Convert Jupyter notebooks to LaTeX with figures, tables, equations, and code blocks
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
 Requires-Dist: pypandoc
 Requires-Dist: beautifulsoup4
+
+# nb2tex
+
+Convert Jupyter notebooks to LaTeX with figures, tables, equations, and code blocks.
+
+The LaTeX template is bundled inside the package, so conversion works from any working directory after install.
+
+## Install
+
+```bash
+pip install .
+```
+
+## Usage
+
+```bash
+nb2tex path/to/notebook.ipynb -o path/to/output.tex
+```
+
+Custom figure directory name (relative to notebook location):
+
+```bash
+nb2tex path/to/notebook.ipynb --figures-dir plots -o path/to/output.tex
+```
+
+Custom figure directory absolute path:
+
+```bash
+nb2tex path/to/notebook.ipynb --figures-dir /absolute/path/to/my-images -o path/to/output.tex
+```
+
+If `-o/--output` is omitted, the output is written next to the notebook as `<notebook_name>.tex`.
+
+## Figures directory requirement
+
+`nb2tex` checks that the selected figures directory exists (default is `figures` next to the notebook).
+If it does not exist, conversion fails with an error.
