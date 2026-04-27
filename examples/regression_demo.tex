@@ -1,0 +1,117 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage{adjustbox}
+\usepackage[
+	a4paper,
+	left=2.5cm,
+	right=2.5cm,
+	top=2.5cm,
+	bottom=2.5cm,
+	headheight=14pt,
+	headsep=0.6cm,
+	footskip=1cm
+]{geometry}
+\usepackage{fancyhdr}
+
+\definecolor{nbbg}{HTML}{F7F8FA}
+\definecolor{nbframe}{HTML}{D9DEE8}
+\definecolor{nbkeyword}{HTML}{1F4E79}
+\definecolor{nbstring}{HTML}{A31515}
+\definecolor{nbcomment}{HTML}{2E8B57}
+\definecolor{nbnumbers}{HTML}{6A737D}
+
+\lstdefinestyle{nbpython}{
+	language=Python,
+	backgroundcolor=\color{nbbg},
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{nbkeyword}\bfseries,
+	stringstyle=\color{nbstring},
+	commentstyle=\color{nbcomment}\itshape,
+	numbers=left,
+	numberstyle=\tiny\color{nbnumbers},
+	numbersep=8pt,
+	frame=single,
+	rulecolor=\color{nbframe},
+	breaklines=true,
+	showstringspaces=false,
+	tabsize=4,
+	columns=fullflexible
+}
+
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%
+}
+\providecommand{\pandocbounded}[1]{%
+	\adjustbox{max width=0.8\linewidth,max totalheight=0.65\textheight}{#1}%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{ 12-PHY-BIPGP2 General Physics Laboratory 2}
+\fancyfoot[R]{ Affan Kaknjo, Andrea Pokrajčić \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyhead[L]{ 12-PHY-BIPGP2 General Physics Laboratory 2}
+	\fancyfoot[R]{ Affan Kaknjo, Andrea Pokrajčić \thepage}
+	\renewcommand{\headrulewidth}{0.4pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
+\begin{document}
+
+
+
+\section{nb2tex Repro Cases}
+
+Synthetic notebook containing exact markdown patterns that previously
+broke TeX conversion.
+
+We arrive at values of \(R_R = 109.5\Omega\), \(R_L = 5.9\Omega\) and
+\(C = 2.165 \mu F\). \ldots{} the Lissajous curve collapses into a line
+45 \(\ensuremath{^\circ}\) tilted w.r.t to the x-axis.
+
+If we let frequency \(f \to \infty\), we see that the phase shift
+\(\phi(f)\) tends to \(0 \ensuremath{^\circ}\) for the RC circuit and
+\(90 \ensuremath{^\circ}\) for the RL and RLC circuit.
+
+On the other hand, if we let frequency \(f \to -\infty\), we see that
+the phase shift \(\phi(f)\) tends to \(90 \ensuremath{^\circ}\) for the
+RC circuit and \(0 \ensuremath{^\circ}\) for the RL and RLC circuit.
+
+Hence it is no surprise that the series resistance
+\(R = (108 \pm 5) \Omega\) acquired by the fitting procedure is almost
+equal to the measured value of the resistor
+resistance \(R_R=(109.5 \pm 1.095) \Omega\).
+
+\subsection{Long Equation Split Demo}
+
+The following equation is intentionally very long and should be
+auto-split at \texttt{=} into aligned rows while preserving one equation
+number in TeX output.
+
+
+\begin{equation}
+\begin{aligned}
+Z_{RL} &= \frac{i\omega L+R_{sp}}{1+i \omega C(i\omega L+R_{sp})} \\
+&= \frac{i\omega L+R_{sp}}{1 - \omega^2LC + i \omega R_{sp}C} \\
+&= \frac{(i\omega L+R_{sp})(1 - \omega^2LC - i \omega R_{sp}C)}{(1 - \omega^2LC)^2 + \omega^2 (R_{sp}C)^2} \\
+&= \frac{R_{sp}+\omega^2 (R_{sp}LC-R_{sp}LC) + i\left( \omega L - \omega^3L^2C - \omega R_{sp}^2C\right)}{1 + \omega^2 \left((R_{sp}C)^2- 2LC \right)+ \omega^4L^2C^2}
+\end{aligned}
+\label{nb2tex:eq:1}
+\end{equation}
+
+
+\end{document}

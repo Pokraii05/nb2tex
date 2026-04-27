@@ -107,7 +107,7 @@ def _format_long_equation(latex):
     for part in parts[2:]:
         lines.append(f"&= {part}")
 
-    aligned_body = " \\\n".join(lines)
+    aligned_body = (" " + r"\\" + "\n").join(lines)
     return f"\\begin{{aligned}}\n{aligned_body}\n\\end{{aligned}}"
 
 
