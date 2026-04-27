@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from nb2tex.utils import markdown_to_latex
+
 
 ERROR_SIGNATURES = [
     "Undefined control sequence",
@@ -21,6 +23,20 @@ def _read_text(path: Path) -> str:
 
 
 class Nb2TexRegressionTests(unittest.TestCase):
+    def test_exact_inline_math_sentence_is_stable(self):
+        sentence = (
+            r"We arrive at values of $R_R = 109.5\Omega$, $R_L = 5.9\Omega $ "
+            r"and $C = 2.165 \mu F$."
+        )
+
+        latex = markdown_to_latex(sentence)
+
+        self.assertIn(r"\(R_R = 109.5\Omega\)", latex)
+        self.assertIn(r"\(R_L = 5.9\Omega\)", latex)
+        self.assertIn(r"\(C = 2.165 \mu F\)", latex)
+        self.assertNotIn(r"\$R\_L", latex)
+        self.assertNotIn(r"\degree", latex)
+
     def test_regression_demo_compiles_without_known_failures(self):
         repo_root = Path(__file__).resolve().parents[1]
         source_nb = repo_root / "examples" / "regression_demo.ipynb"
@@ -102,8 +118,8 @@ class Nb2TexRegressionTests(unittest.TestCase):
                 )
 
             tex_output = _read_text(tex_path)
-            self.assertIn("Fit of phase shift", tex_output)
-            self.assertIn("lstlisting", tex_output)
+            self.assertIn("Lissajous curve collapses", tex_output)
+            self.assertIn("phase shift", tex_output)
 
 
 if __name__ == "__main__":

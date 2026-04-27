@@ -7,13 +7,17 @@ _SPACED_INLINE_MATH_RE = re.compile(r"(?<!\\)\$\s+(.+?)\s+\$", re.DOTALL)
 _PANDOC_BOUNDED_IMAGE_RE = re.compile(
     r"\\pandocbounded\{\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}"
 )
+_ESCAPED_DOLLAR_LATEX_RE = re.compile(r"\\\$(.+?)\\\$", re.DOTALL)
 _INLINE_MATH_LATEX_RE = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
+_DEGREE_MACRO_RE = re.compile(r"\\degree\b")
+_MATHISH_CONTENT_RE = re.compile(r"(\\[A-Za-z]+|[0-9]|[_^=+\-*/<>])")
 
 
 def _normalize_problematic_unicode_in_latex(latex_text):
     # Keep pdflatex-safe output for common scientific Unicode symbols in markdown.
     replacements = {
         "°": r"\ensuremath{^\circ}",
+        r"\degree": r"\ensuremath{^\circ}",
         "Ω": r"\ensuremath{\Omega}",
         "ω": r"\ensuremath{\omega}",
         "μ": r"\ensuremath{\mu}",
@@ -24,6 +28,11 @@ def _normalize_problematic_unicode_in_latex(latex_text):
     for old, new in replacements.items():
         latex_text = latex_text.replace(old, new)
     return latex_text
+
+
+def _normalize_degree_macro_in_markdown(md_text):
+    # Accept author-written \degree in prose or math and normalize to TeX-safe degrees.
+    return _DEGREE_MACRO_RE.sub(r"\\ensuremath{^\\circ}", md_text)
 
 
 def _balance_dollar_math_delimiters(latex_text):
@@ -75,8 +84,16 @@ def _balance_dollar_math_delimiters(latex_text):
 def _normalize_inline_math_delimiters(md_text):
     # Accept author-written \$...\$ as inline math and convert to $...$.
     md_text = _ESCAPED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1)}$", md_text)
-    # Also normalize spaced delimiters like "$ e^{...} $" to "$e^{...}$".
-    return _SPACED_INLINE_MATH_RE.sub(lambda m: f"${m.group(1).strip()}$", md_text)
+
+    # Normalize spaced delimiters like "$ e^{...} $" to "$e^{...}$",
+    # but only when the content is actually math-like.
+    def repl(match):
+        inner = match.group(1)
+        if not _MATHISH_CONTENT_RE.search(inner):
+            return match.group(0)
+        return f"${inner.strip()}$"
+
+    return _SPACED_INLINE_MATH_RE.sub(repl, md_text)
 
 
 def _normalize_pandoc_bounded_images(latex_text):
@@ -86,6 +103,25 @@ def _normalize_pandoc_bounded_images(latex_text):
         return "\\pandocbounded{\\includegraphics{" + path + "}}"
 
     return _PANDOC_BOUNDED_IMAGE_RE.sub(repl, latex_text)
+
+
+def _normalize_escaped_inline_math_in_latex(latex_text):
+    # Pandoc may emit intended inline math as escaped dollars (\$...\$).
+    # Recover only math-like segments to avoid changing plain text prices.
+    def repl(match):
+        inner = match.group(1)
+        if not _MATHISH_CONTENT_RE.search(inner):
+            return match.group(0)
+
+        recovered = (
+            inner.replace(r"\_", "_")
+            .replace(r"\{", "{")
+            .replace(r"\}", "}")
+            .strip()
+        )
+        return rf"\({recovered}\)"
+
+    return _ESCAPED_DOLLAR_LATEX_RE.sub(repl, latex_text)
 
 
 def _normalize_inline_math_spacing_in_latex(latex_text):
@@ -109,6 +145,7 @@ def _normalize_inline_math_spacing_in_latex(latex_text):
 
 def markdown_to_latex(md_text, id_prefix=""):
     md_text = _normalize_inline_math_delimiters(md_text)
+    md_text = _normalize_degree_macro_in_markdown(md_text)
     extra_args = []
     if id_prefix:
         extra_args.append(f"--id-prefix={id_prefix}")
@@ -120,8 +157,7 @@ def markdown_to_latex(md_text, id_prefix=""):
         extra_args=extra_args,
     )
     latex = _normalize_pandoc_bounded_images(latex)
-    # Avoid heuristic conversion of escaped dollars to math wrappers,
-    # which can introduce partial delimiters in plain-text fragments.
+    latex = _normalize_escaped_inline_math_in_latex(latex)
     latex = _normalize_inline_math_spacing_in_latex(latex)
     latex = _normalize_problematic_unicode_in_latex(latex)
     latex = _balance_dollar_math_delimiters(latex)
