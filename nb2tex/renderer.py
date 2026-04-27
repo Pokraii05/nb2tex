@@ -14,6 +14,7 @@ from nb2tex.utils import markdown_to_latex
 
 
 _LATEX_LABEL_RE = re.compile(r"\\label\{([^{}]+)\}")
+_EQUATION_BREAK_THRESHOLD = 180
 _CODE_UNICODE_REPLACEMENTS = {
     "\u2013": "-",  # en dash
     "\u2014": "--",  # em dash
@@ -88,10 +89,33 @@ def render_table(block):
 """
 
 
+def _format_long_equation(latex):
+    compact = " ".join(latex.strip().split())
+
+    # Keep author-specified environments/layouts unchanged.
+    if r"\begin{" in compact or r"\\" in compact:
+        return latex.strip()
+
+    if len(compact) <= _EQUATION_BREAK_THRESHOLD or "=" not in compact:
+        return latex.strip()
+
+    parts = [part.strip() for part in compact.split("=")]
+    if len(parts) < 2:
+        return latex.strip()
+
+    lines = [f"{parts[0]} &= {parts[1]}"]
+    for part in parts[2:]:
+        lines.append(f"&= {part}")
+
+    aligned_body = " \\\n".join(lines)
+    return f"\\begin{{aligned}}\n{aligned_body}\n\\end{{aligned}}"
+
+
 def render_equation(block):
+    equation_latex = _format_long_equation(block.latex)
     return f"""
 \\begin{{equation}}
-{block.latex}
+{equation_latex}
 \\label{{{block.label}}}
 \\end{{equation}}
 """

@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from nb2tex.ir import EquationBlock
+from nb2tex.renderer import render_equation
 from nb2tex.utils import markdown_to_latex
 
 
@@ -23,6 +25,22 @@ def _read_text(path: Path) -> str:
 
 
 class Nb2TexRegressionTests(unittest.TestCase):
+    def test_long_equation_is_split_into_aligned_rows(self):
+        long_equation = (
+            r"Z_{RL} = \frac{i\omega L+R_{sp}}{1+i \omega C(i\omega L+R_{sp})} = "
+            r"\frac{i\omega L+R_{sp}}{1 - \omega^2LC + i \omega R_{sp}C} = "
+            r"\frac{(i\omega L+R_{sp})(1 - \omega^2LC - i \omega R_{sp}C)}"
+            r"{(1 - \omega^2LC)^2 + \omega^2 (R_{sp}C)^2}"
+        )
+
+        rendered = render_equation(EquationBlock(long_equation, "nb2tex:eq:test"))
+
+        self.assertIn(r"\begin{equation}", rendered)
+        self.assertIn(r"\begin{aligned}", rendered)
+        self.assertIn(r"&=", rendered)
+        self.assertIn(r"\label{nb2tex:eq:test}", rendered)
+        self.assertEqual(1, rendered.count(r"\label{nb2tex:eq:test}"))
+
     def test_exact_inline_math_sentence_is_stable(self):
         sentence = (
             r"We arrive at values of $R_R = 109.5\Omega$, $R_L = 5.9\Omega $ "
